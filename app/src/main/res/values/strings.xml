@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Lab11</string>
+    <string name="spinner_prompt_year">選擇年份</string>
+    <string name="spinner_prompt_month">選擇月份</string>
+    <string name="spinner_prompt_day">選擇日期</string>
+
+</resources>
