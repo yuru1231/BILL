@@ -16,6 +16,7 @@
         <!-- MainActivity: 啟動畫面 -->
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.PiechartMax"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,8 +34,14 @@
             android:name=".bill"
             android:exported="true" />
 
+        <!-- PieChartActivity: 圖表介面 -->
         <activity
-            android:name=".chart"
+            android:name=".PieChartView"
+            android:exported="true" />
+
+        <!-- chart: 圖表展示 -->
+        <activity
+            android:name=".PieChartActivity"
             android:exported="true" />
 
     </application>
