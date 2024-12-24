@@ -16,10 +16,11 @@
 
         <!-- 其他元件 -->
     </LinearLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!\nWelcome to BiLL"
+        android:text="Welcome to BiLL"
         android:textSize="38dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
