@@ -7,14 +7,7 @@ android:orientation="vertical"
 android:background="#E1EFF6"
 android:padding="16dp">
 
-<Button
-    android:id="@+id/btn_map"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Map"
-    android:backgroundTint="#ECCBD9"
-    android:textColor="@android:color/black"
-    android:layout_marginBottom="16dp" />
+
 
 <Button
     android:id="@+id/btn_bill"
@@ -31,6 +24,25 @@ android:padding="16dp">
     android:layout_height="wrap_content"
     android:text="Chart"
     android:backgroundTint="#ECCBD9"
-    android:textColor="@android:color/black" />
+    android:textColor="@android:color/black"
+    android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btn_goal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Goal"
+        android:backgroundTint="#ECCBD9"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btn_ViewLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ViewLocation"
+        android:backgroundTint="#ECCBD9"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="16dp"/>
 
 </LinearLayout>

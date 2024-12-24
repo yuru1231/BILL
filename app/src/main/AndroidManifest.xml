@@ -33,6 +33,10 @@
             android:name=".bill"
             android:exported="true" />
 
+        <activity
+            android:name=".chart"
+            android:exported="true" />
+
     </application>
 
 </manifest>
