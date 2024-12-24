@@ -1,6 +1,6 @@
 package com.example.lab11;
 
-import android.database.Cursor;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -11,16 +11,20 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class bill extends AppCompatActivity {
 
     private EditText ed_price;
     private RadioButton radioButton1, radioButton2, radioButton3, radioButton4, radioButton5, radioButton6;
-    private Button  btn_insert, btn_delete;
+    private Button btn_insert, btn_delete, btn_add_location, btn_view_locations;
     private ListView listView;
     private ArrayAdapter<String> adapter;
     private ArrayList<String> items = new ArrayList<>();
@@ -28,161 +32,51 @@ public class bill extends AppCompatActivity {
 
     private Spinner yearSpinner, monthSpinner, daySpinner;
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        dbrw.close(); // 關閉資料庫
-    }
+    private final LatLng[] predefinedLocations = {
+            new LatLng(25.033611, 121.565000),
+            new LatLng(25.047924, 121.517081),
+            new LatLng(25.032728, 121.564137),
+            new LatLng(25.02348, 121.52864),
+            new LatLng(25.04360, 121.53562),
+            new LatLng(25.05591, 121.51970),
+            new LatLng(25.03369, 121.52998)
+    };
+    private final String[] predefinedLocationNames = {"台北101", "台北車站", "臺北信義區", "全家便利商店", "7-11", "中山商圈", "永康商圈"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bill);
 
-        // 初始化 UI 元件
         ed_price = findViewById(R.id.ed_price);
-        radioButton1 = findViewById(R.id.radioButton1);
-        radioButton2 = findViewById(R.id.radioButton2);
-        radioButton3 = findViewById(R.id.radioButton3);
-        radioButton4 = findViewById(R.id.radioButton4);
-        radioButton5 = findViewById(R.id.radioButton5);
-        radioButton6 = findViewById(R.id.radioButton6);
+        btn_add_location = findViewById(R.id.add_location_button);
+        btn_view_locations = findViewById(R.id.view_locations_button);
 
-        yearSpinner = findViewById(R.id.spinner_year);
-        monthSpinner = findViewById(R.id.spinner_month);
-        daySpinner = findViewById(R.id.spinner_day);
+        btn_add_location.setOnClickListener(view -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("選擇地點");
 
+            final Spinner locationSpinner = new Spinner(this);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, predefinedLocationNames);
+            locationSpinner.setAdapter(adapter);
 
-        btn_insert = findViewById(R.id.btn_insert);
-        btn_delete = findViewById(R.id.btn_delete);
-        listView = findViewById(R.id.listView);
+            builder.setView(locationSpinner);
+            builder.setPositiveButton("新增標記", (dialog, which) -> {
+                int selectedPosition = locationSpinner.getSelectedItemPosition();
+                LatLng selectedLocation = predefinedLocations[selectedPosition];
+                String selectedName = predefinedLocationNames[selectedPosition];
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items);
-        listView.setAdapter(adapter);
-
-        dbrw = new MyDBHelper(this).getWritableDatabase();
-
-        // 初始化 Spinner 的數據
-        initializeSpinners();
-
-        // 插入功能
-        btn_insert.setOnClickListener(view -> {
-            String type = getSelectedType();
-            String price = ed_price.getText().toString();
-
-            if (type == null || price.isEmpty()) {
-                Toast.makeText(bill.this, "欄位請勿留空", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // 獲取 Spinner 中的選擇
-            int year = Integer.parseInt(yearSpinner.getSelectedItem().toString());
-            int month = Integer.parseInt(monthSpinner.getSelectedItem().toString());
-            int day = Integer.parseInt(daySpinner.getSelectedItem().toString());
-
-            try {
-                dbrw.execSQL("INSERT INTO myTable(book, price, year, month, day) VALUES(?, ?, ?, ?, ?)",
-                        new Object[]{type, price, year, month, day});
-                Toast.makeText(bill.this, "成功新增：類別 " + type + " 價格 " + price, Toast.LENGTH_SHORT).show();
-                ed_price.setText(""); // 清空價格輸入
-                updateListView(); // 更新 ListView
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(bill.this, "新增失敗：" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+                MyDBHelper dbHelper = new MyDBHelper(this);
+                dbHelper.insertLocation(selectedName, selectedLocation.latitude, selectedLocation.longitude);
+                Toast.makeText(this, "地點已新增: " + selectedName, Toast.LENGTH_SHORT).show();
+            });
+            builder.setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
+            builder.show();
         });
 
-
-
-        // 刪除功能
-        btn_delete.setOnClickListener(view -> {
-            String type = getSelectedType();
-            String year = yearSpinner.getSelectedItem().toString();
-            String month = monthSpinner.getSelectedItem().toString();
-            String day = daySpinner.getSelectedItem().toString();
-
-            if (type == null) {
-                Toast.makeText(bill.this, "請選擇要刪除的類別", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            try {
-                int rows = dbrw.delete(
-                        "myTable",
-                        "book = ? AND year = ? AND month = ? AND day = ?",
-                        new String[]{type, year, month, day}
-                );
-
-                if (rows > 0) {
-                    Toast.makeText(bill.this, "刪除成功：類別 " + type, Toast.LENGTH_SHORT).show();
-                    updateListView(); // 更新 ListView
-                } else {
-                    Toast.makeText(bill.this, "刪除失敗：未找到符合條件的記錄", Toast.LENGTH_SHORT).show();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(bill.this, "刪除失敗：" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+        btn_view_locations.setOnClickListener(view -> {
+            Intent intent = new Intent(bill.this, ViewLocation.class);
+            startActivity(intent);
         });
-    }
-
-    // 初始化 Spinner 的數據
-    private void initializeSpinners() {
-        // 設置年份範圍
-        ArrayList<String> years = new ArrayList<>();
-        for (int i = 2023; i <= Calendar.getInstance().get(Calendar.YEAR); i++) {
-            years.add(String.valueOf(i));
-        }
-        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, years);
-        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        yearSpinner.setAdapter(yearAdapter);
-
-        // 設置月份範圍
-        ArrayList<String> months = new ArrayList<>();
-        for (int i = 1; i <= 12; i++) {
-            months.add(String.valueOf(i));
-        }
-        ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, months);
-        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        monthSpinner.setAdapter(monthAdapter);
-
-        // 設置日期範圍
-        ArrayList<String> days = new ArrayList<>();
-        for (int i = 1; i <= 31; i++) {
-            days.add(String.valueOf(i));
-        }
-        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, days);
-        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        daySpinner.setAdapter(dayAdapter);
-    }
-
-    // 更新 ListView 資料
-    private void updateListView() {
-        items.clear(); // 清空舊數據
-
-        Cursor cursor = dbrw.rawQuery("SELECT * FROM myTable", null);
-        while (cursor.moveToNext()) {
-            String book = cursor.getString(cursor.getColumnIndexOrThrow("book"));
-            String price = cursor.getString(cursor.getColumnIndexOrThrow("price"));
-            int year = cursor.getInt(cursor.getColumnIndexOrThrow("year"));
-            int month = cursor.getInt(cursor.getColumnIndexOrThrow("month"));
-            int day = cursor.getInt(cursor.getColumnIndexOrThrow("day"));
-
-            items.add(book + " - " + price + "元 (" + year + "/" + month + "/" + day + ")");
-        }
-        cursor.close();
-
-        adapter.notifyDataSetChanged(); // 更新 Adapter
-    }
-
-    // 取得選中的類別
-    private String getSelectedType() {
-        if (radioButton1.isChecked()) return "早餐";
-        if (radioButton2.isChecked()) return "午餐";
-        if (radioButton3.isChecked()) return "晚餐";
-        if (radioButton4.isChecked()) return "交通";
-        if (radioButton5.isChecked()) return "娛樂";
-        if (radioButton6.isChecked()) return "其他";
-        return null;
     }
 }

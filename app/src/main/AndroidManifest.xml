@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Lab11"
         tools:targetApi="31">
+
+        <!-- ViewLocation: 顯示位置介面 -->
+        <activity
+            android:name=".ViewLocation"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <!-- MainActivity: 啟動畫面 -->
         <activity
@@ -33,10 +45,20 @@
             android:name=".bill"
             android:exported="true" />
 
+        <!-- chart: 圖表介面 -->
         <activity
             android:name=".chart"
             android:exported="true" />
 
-    </application>
+        <!-- Google Maps API 金鑰 -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB1t4w5AJ3A2fOOacSWbYjj7peFyIXoYyg" />
 
+        <!-- Apache Library 支援 -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+    </application>
 </manifest>

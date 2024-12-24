@@ -31,12 +31,20 @@ android {
     }
 }
 
+repositories {
+    google()
+    mavenCentral()
+    maven { url = uri("https://jitpack.io") } // 添加 JitPack 支援
+}
+
 dependencies {
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0") // 添加 MPAndroidChart
     implementation("androidx.appcompat:appcompat:1.6.1") // 保留其餘依賴
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.activity:activity:1.8.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("com.google.android.gms:play-services-maps:18.1.0") // 使用 Google Maps 最新版本
+    implementation("com.android.volley:volley:1.2.1") // 使用 Volley 最新版本
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
