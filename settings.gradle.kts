@@ -1,14 +1,11 @@
 pluginManagement {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            url = uri("https://jitpack.io") // Kotlin DSL 的正确语法
+        }
     }
 }
 dependencyResolutionManagement {
@@ -16,10 +13,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        
+        maven {
+            url = uri("https://jitpack.io") // Kotlin DSL 的正确语法
+        }
     }
 }
 
 rootProject.name = "Lab11"
 include(":app")
- 
