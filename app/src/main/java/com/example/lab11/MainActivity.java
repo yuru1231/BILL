@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         // 使用 Handler 延遲跳轉
         new Handler().postDelayed(() -> {
             // 跳轉到新的 Activity，例如 bill
-            Intent intent = new Intent(MainActivity.this, bill.class);
+            Intent intent = new Intent(MainActivity.this,select_function.class);
             startActivity(intent);
             finish(); // 關閉 MainActivity，避免返回到啟動畫面
         }, 2000); // 延遲 2 秒（2000 毫秒）
